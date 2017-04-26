@@ -1,3 +1,15 @@
+/////////////////////////////////////////////////////////////////////////////
+// Semester:         CS367 Spring 2016
+// PROJECT:          p4
+// FILE:             Interval.java
+//
+// TEAM:    Team 6
+// Authors:
+// Author1: (Sidney Smith, sbsmith5@wisc.edu, sbsmith5, 001)
+// Author2: ()
+//
+//////////////////////////// 80 columns wide //////////////////////////////////
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
