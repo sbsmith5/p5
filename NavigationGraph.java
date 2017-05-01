@@ -12,6 +12,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 //	The constructor must accept an array of String property names (eg. Time, Cost) that 
 //	correspond to the edge properties.	
 	
+	
+	//TODO: THIS NEEDS TO BE CHANGED TO GRAPHNODES
 	public NavigationGraph(String[] edgePropertyNames) {
 		Boolean visited[] = new Boolean [edgePropertyNames.length];
 		int totalWeight[] = new int [edgePropertyNames.length];
@@ -20,6 +22,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 			visited[i] = false;
 			totalWeight[i] = Integer.MAX_VALUE;
 			GraphNode node = new GraphNode(edgePropertyNames[i], i);
+			
 			//set paths to null
 		}
 		totalWeight[0] = 0; // set start vertex weight to zero
@@ -41,8 +44,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
-		
-		return null; //TODO: implement correctly. 
+		Location loc = new Location(name);
+		return loc; 
 	}
 
 }

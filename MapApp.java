@@ -190,6 +190,76 @@ public class MapApp {
 	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath){
 			// TODO: read/parse the input file graphFilepath and create
 			// NavigationGraph with vertices and edges
+		String[] edgePropertyNames = null;
+		
+		
+		//Scanner for string
+		Scanner scnr = new Scanner(graphFilepath); 
+		String headers = scnr.nextLine(); 
+		//Scanner for header labels (first line)
+		Scanner firstLine = new Scanner(headers); 
+		firstLine.next(); //skips "source"
+		firstLine.next(); //skips "destination"
+		while (firstLine.hasNext()){
+			int i = 0;
+			//adds property names from file
+			edgePropertyNames[i] = scnr.next(); 
+			i++;
+		}
+		
+		
+		Location[] locations = new Location[10]; //list of locations
+		//TODO: SHADOW ARRAY AND EXPANSION NEEDED
+		int i = 0;
+		while (scnr.hasNext()){
+			//list for edge values
+			List<Double> edges = new ArrayList<Double>(edgePropertyNames.length); 
+			String source;
+			String destination;
+			Boolean sourceDup = false;
+			Boolean destDup = false;
+			source = scnr.next();
+			destination = scnr.next();
+			Location sourceLoc = new Location(source);
+			Location destinationLoc = new Location(destination);
+			for(int j = 0; j < locations.length; j++){
+				if (source.equals(locations[i])){
+					sourceDup = true;
+				}
+				if (destination.equals(locations[i])){
+					destDup = true;
+				}
+				if (source.equals(destination)){
+					destDup = true;
+					sourceDup = true;
+				}
+			}
+			if(!sourceDup){
+				locations[i] = sourceLoc;
+				i++;
+			}
+			if(!destDup){
+				locations[i] = destinationLoc;
+				i++;
+			}
+			
+			while(scnr.hasNextLine()){
+				edges.add(scnr.nextDouble());
+			}
+			
+		//	Graph
+			//TODO: make paths with source and dest, and list of edges
+			//TODO: make graphnodes
+			
+			
+			
+			
+			
+	//		scnr.nextLine();
+		}
+		
+		
+		
 			return null;
 
 	}
