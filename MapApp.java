@@ -6,7 +6,9 @@
 // TEAM:    Team 6
 // Authors:
 // Author1: (Sidney Smith, sbsmith5@wisc.edu, sbsmith5, 001)
-// Author2: ()
+// Author2: (Jack Weissburg,,,)
+// Author3: (Patrick,,,)
+// Author4: (Shikhar Mittal,,,)
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 
