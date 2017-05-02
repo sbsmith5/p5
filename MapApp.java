@@ -187,10 +187,15 @@ public class MapApp {
 	 *             if any property value is not numeric 
 	 */
 
-	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath){
+	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath) throws FileNotFoundException, InvalidFileException{
 			// TODO: read/parse the input file graphFilepath and create
 			// NavigationGraph with vertices and edges
-		String[] edgePropertyNames = new String[10]; //TODO: arrayList
+					//String[] edgePropertyNames = new String[10]; //TODO: arrayList
+		if(graphFilepath == null)
+			throw new FileNotFoundException();
+		
+		//array list of the edge names
+		List<String> edgeNamesList = new ArrayList();
 		
 		
 		//Scanner for string
@@ -200,20 +205,25 @@ public class MapApp {
 		Scanner firstLine = new Scanner(headers); 
 		firstLine.next(); //skips "source"
 		firstLine.next(); //skips "destination"
+		int propertyCounter = 0;
 		while (firstLine.hasNext()){
-			int i = 0;
 			//adds property names from file
-			edgePropertyNames[i] = scnr.next(); 
-			i++;
+			edgeNamesList.add(firstLine.next()); 
+			propertyCounter++;
+		}
+		//if header line is too short
+		if (propertyCounter < 2){
+			throw new InvalidFileException("header line in the file has < 3 columns");
 		}
 		
 		
-		Location[] locations = new Location[10]; //list of locations
-		//TODO: SHADOW ARRAY AND EXPANSION NEEDED
-		int i = 0;
+		//arrayList of the location
+		List<Location> locationList = new ArrayList();
+
+		int i = 0; //i is used for the GraphNode IDs
 		while (scnr.hasNext()){
 			//list for edge values
-			List<Double> edges = new ArrayList<Double>(edgePropertyNames.length); 
+			List<Double> edges = new ArrayList<Double>(edgeNamesList.size()); 
 			String source;
 			String destination;
 			Boolean sourceDup = false;
@@ -222,11 +232,11 @@ public class MapApp {
 			destination = scnr.next();
 			Location sourceLoc = new Location(source);
 			Location destinationLoc = new Location(destination);
-			for(int j = 0; j < locations.length; j++){
-				if (source.equals(locations[i])){
+			for(int j = 0; j < locationList.size(); j++){
+				if (source.equals(locationList.get(j))){
 					sourceDup = true;
 				}
-				if (destination.equals(locations[i])){
+				if (destination.equals(locationList.get(i))){
 					destDup = true;
 				}
 				if (source.equals(destination)){
@@ -235,32 +245,57 @@ public class MapApp {
 				}
 			}
 			if(!sourceDup){
+				//creates new GraphNode if it isn't a duplicate
 				GraphNode sourceNode = new GraphNode(sourceLoc, i);
 				i++;
+				//adds location to the list
+				locationList.add(sourceLoc);
 			}
 			if(!destDup){
 				GraphNode destinationNode = new GraphNode(destinationLoc, i);
 				i++;
+				locationList.add(destinationLoc);
 			}
 			
+			//create path
+			Path newPath = new Path(sourceLoc, destinationLoc, edges);
+			
+			//adds edge weight if it is numeric
+			int intTemp = 0; //used if weight is an int
+			//keep track of how many properties are on each line
+			int numOfProperties = 0;
 			while(scnr.hasNextLine()){
-				edges.add(scnr.nextDouble());
+				if (scnr.hasNextDouble()){
+					edges.add(scnr.nextDouble());
+					numOfProperties++;
+				}
+				else if (scnr.hasNextInt()) {
+					intTemp = scnr.nextInt();
+					edges.add((double) intTemp);
+					numOfProperties++;
+				}
+				else {
+					throw new InvalidFileException("property value is not numeric");
+				}	
 			}
+			//if the number of properties is inconsistent, throw error
+			if (numOfProperties != propertyCounter)
+				throw new InvalidFileException("line that describes an edge has"
+						+ " different number of properties than as described in the header");
 			
-		//	Graph
-			//TODO: make paths with source and dest, and list of edges
-			//TODO: make graphnodes
-			
-			
-			
-			
-			
-	//		scnr.nextLine();
+			scnr.nextLine(); //skip to next line
 		}
 		
+		//converts ArrayList of property names to Array
+		String[] edgePropertyNames = new String [edgeNamesList.size()];
+		for(int k = 0; k < edgeNamesList.size(); k++){
+			edgePropertyNames[k] = edgeNamesList.get(k);
+		}
 		
+		NavigationGraph navGraph = new NavigationGraph(edgePropertyNames);
 		
-			return null;
+		//returns the navigation graph
+		return navGraph;
 
 	}
 
