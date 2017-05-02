@@ -6,7 +6,7 @@
 // TEAM:    Team 6
 // Authors:
 // Author1: (Sidney Smith, sbsmith5@wisc.edu, sbsmith5, 001)
-// Author2: ()
+// Author2: (Jack Weisburg, weissburg2@wisc.edu, weissburg2, 002)
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 
@@ -216,6 +216,14 @@ public class MapApp {
 			throw new InvalidFileException("header line in the file has < 3 columns");
 		}
 		
+		//converts ArrayList of property names to Array
+		String[] edgePropertyNames = new String [edgeNamesList.size()];
+		for(int k = 0; k < edgeNamesList.size(); k++){
+				edgePropertyNames[k] = edgeNamesList.get(k);
+		}
+			
+		//navGraph that will add vertices and edges
+		NavigationGraph navGraph = new NavigationGraph(edgePropertyNames);
 		
 		//arrayList of the location
 		List<Location> locationList = new ArrayList();
@@ -245,20 +253,21 @@ public class MapApp {
 				}
 			}
 			if(!sourceDup){
-				//creates new GraphNode if it isn't a duplicate
-				GraphNode sourceNode = new GraphNode(sourceLoc, i);
+				//creates new vertex if it isn't a duplicate
+				navGraph.addVertex(sourceLoc);
 				i++;
 				//adds location to the list
 				locationList.add(sourceLoc);
 			}
 			if(!destDup){
-				GraphNode destinationNode = new GraphNode(destinationLoc, i);
+				navGraph.addVertex(destinationLoc);
 				i++;
 				locationList.add(destinationLoc);
 			}
 			
-			//create path
+			//create edge
 			Path newPath = new Path(sourceLoc, destinationLoc, edges);
+			navGraph.addEdge(sourceLoc, destinationLoc, newPath);
 			
 			//adds edge weight if it is numeric
 			int intTemp = 0; //used if weight is an int
@@ -286,13 +295,6 @@ public class MapApp {
 			scnr.nextLine(); //skip to next line
 		}
 		
-		//converts ArrayList of property names to Array
-		String[] edgePropertyNames = new String [edgeNamesList.size()];
-		for(int k = 0; k < edgeNamesList.size(); k++){
-			edgePropertyNames[k] = edgeNamesList.get(k);
-		}
-		
-		NavigationGraph navGraph = new NavigationGraph(edgePropertyNames);
 		
 		//returns the navigation graph
 		return navGraph;
