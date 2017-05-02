@@ -190,7 +190,7 @@ public class MapApp {
 	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath){
 			// TODO: read/parse the input file graphFilepath and create
 			// NavigationGraph with vertices and edges
-		String[] edgePropertyNames = null;
+		String[] edgePropertyNames = new String[10]; //TODO: arrayList
 		
 		
 		//Scanner for string
@@ -235,11 +235,11 @@ public class MapApp {
 				}
 			}
 			if(!sourceDup){
-				locations[i] = sourceLoc;
+				GraphNode sourceNode = new GraphNode(sourceLoc, i);
 				i++;
 			}
 			if(!destDup){
-				locations[i] = destinationLoc;
+				GraphNode destinationNode = new GraphNode(destinationLoc, i);
 				i++;
 			}
 			
