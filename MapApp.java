@@ -195,7 +195,7 @@ public class MapApp {
 			throw new FileNotFoundException();
 		
 		//array list of the edge names
-		List<String> edgeNamesList = new ArrayList();
+		List<String> edgeNamesList = new ArrayList<String>();
 		
 		
 		//Scanner for string
@@ -226,7 +226,7 @@ public class MapApp {
 		NavigationGraph navGraph = new NavigationGraph(edgePropertyNames);
 		
 		//arrayList of the location
-		List<Location> locationList = new ArrayList();
+		List<Location> locationList = new ArrayList<Location>();
 
 		int i = 0; //i is used for the GraphNode IDs
 		while (scnr.hasNext()){
