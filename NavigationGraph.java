@@ -14,6 +14,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
 
@@ -42,7 +43,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 */
 	public NavigationGraph(String[] edgePropertyNames) {
 		//TODO - Done (Sid)
-
+		if(edgePropertyNames == null)
+			throw new IllegalArgumentException();
+		
 		this.edgeProperties = edgePropertyNames;	
 	}
 
@@ -60,11 +63,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
 		//scan the list of current vertices in the graph to make sure that the vertex to be added
 		//does not already exist
+		if (vertex == null)
+			throw new IllegalArgumentException();
 		for (int i = 0; i<this.vertices.size(); i++)
 			if (this.vertices.get(i).equals(vertex))
 				return;
 
 		GraphNode<Location, Path> toAdd = new GraphNode<Location, Path>(vertex, this.id);
+		
 
 		vertices.add(vertex);
 		this.navigationGraph.add(toAdd);
@@ -87,10 +93,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//	  	 Checked ()
 		// do we need to add a check to see if there is path from src to dest.
 
+		if(src == null || dest == null || edge == null)
+			throw new IllegalArgumentException();
 		GraphNode<Location, Path> g = getGraphNodebyLocation(src);
+		
 		if(g == null){
 			throw new NullPointerException();
 		}
+		
 		g.addOutEdge(edge);
 		this.edges.add(edge); //adds edge
 		this.navigationGraph.get(g.getId()).addOutEdge(edge);
@@ -171,6 +181,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return List of vertices(neighbors) of type Location
 	 */
 	public List<Location> getNeighbors(Location vertex){
+		
+		if (vertex == null)
+			throw new IllegalArgumentException();
+		
 		List<Location> neighbors = new ArrayList<Location>();
 		List<Path> vertexPaths = new ArrayList<Path>();
 
@@ -205,10 +219,72 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            edge property by which shortest route has to be calculated
 	 * @return List of paths that denote the shortest route by edgePropertyName
 	 */
-	public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName){
+	public List<Path> getShortestRoute(Location src, Location dest, String edgeProperty)
+		throws IllegalArgumentException{
 		//make static shell class with predecessor list equal to null, weight equal to infinity, and visited to false
 		//in algorithm, have priority queue with vertex info of locations, put weight equal to 0
-		//call getvertices //this.getvertices
+		//call get vertices //this.getvertices
+		
+		if (src == null || dest == null || edgePropertyName == null)
+			throw new IllegalArgumentException();
+		
+		List<Path> shortestPath = new ArrayList<Path>();
+		
+		QueueEntry[] queue = new QueueEntry[navigationGraph.size()];
+		int indexOfProperty = 0;
+		GraphNode<Location, Path> node = null;
+		
+		//get index for weight property to be used for shortest route
+		for (int i = 0; i<edgeProperties.length; i++){
+			if(edgeProperties[i].equals(edgeProperty)){
+				indexOfProperty = i;
+				break;
+			}
+		}
+		
+		//create a queue entry for each vertex
+		for (int i = 0; i<navigationGraph.size(); i++){
+			
+			//get all vertices in the graph, place them in the list of queue entries
+			queue[i] = new QueueEntry(Double.MAX_VALUE, navigationGraph.get(i));
+			//set each entry to unvisited
+			queue[i].setVisited(false);
+			//initialize each entry's predecessor to null
+			queue[i].setPredecessor(null);
+		}
+		
+		
+		int startIndex = getIdByName(src);
+		queue[startIndex].setWeight(0.0);
+		PriorityQueue<QueueEntry> pq = new PriorityQueue<QueueEntry>();
+		pq.add(queue[startIndex]);
+		
+		//current entry, 'C' as in Dijkstra's algorithm in class notes
+		QueueEntry curr;
+		while(!pq.isEmpty()){
+			
+			//remove min from queue
+			curr = pq.poll();
+			curr.setVisited(true);
+			
+			for (int j=0; j<curr.getVertex().getOutEdges().size(); j++){
+				Path successor = curr.getVertex().getOutEdges().get(j);
+				//get successor location in navgraph for the node that corresponds to the successor
+				int index = getIdByName(successor.getDestination());
+				
+				if (!queue[index].getVisited()){
+					if (curr.getWeight() + successor.getProperties().get(indexOfProperty) < queue[index].getWeight()){
+						queue[index].setWeight(curr.getWeight() + successor.getProperties().get(indexOfProperty));
+						queue[index].setPredecessor(curr);
+						if (!pq.contains(queue[index])){
+							pq.add(queue[index]);
+						}
+					}
+				}
+			}
+		}
+		
+		//
 		
 		boolean visited = false; 
 		double vectorWeight = Double.POSITIVE_INFINITY; 
@@ -237,13 +313,27 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 */
 	public Location getLocationByName(String name) {
 		
-		for (int k = 0; k < vertices.size(); k++){
+		if (name == null)
+			throw new IllegalArgumentException();
+		
+		for (int k = 0; k < navigationGraph.size(); k++){
 			if (vertices.get(k).getName().equals(name)){
 				return vertices.get(k);
 			}
 		}
 		return null;
 
+	}
+	
+	public int getIdByName(Location name) 
+		throws IllegalArgumentException{
+		
+		for (int j = 0; j<navigationGraph.size(); j++){
+			if (navigationGraph.get(j).getVertexData().equals(name)){
+				return navigationGraph.get(j).getId();
+			}
+		}
+		throw new IllegalArgumentException();
 	}
 
 }
