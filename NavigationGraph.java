@@ -17,18 +17,7 @@ import java.util.List;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
 
-	//TODO: Implement all methods of GraphADT
-	
-//	The implementation is left up to you, though we strongly recommend using the GraphNode
-//	class to implement an Adjacency List representation of the graph. You may add whatever 
-//	private methods you see fit to in addition to implementing all of the required public
-//	methods even if your final solution does not use a particular operation.
-//
-//	This class must implement GraphADT and create a graph of Locations connected by Paths. 
-//	i.e., it must not be generic.  
-//	The constructor must accept an array of String property names (eg. Time, Cost) that 
-//	correspond to the edge properties.	
-	
+
 	private String[] edgeProperties;
 	//SID - Will be representing the graph as an ArrayList<LinkedList<TYPE (TBD)>>
 	private ArrayList< GraphNode<Location, Path>> navigationGraph;
@@ -39,7 +28,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	private ArrayList<Path> edges;
 	//this represents the current id to be assigned to new GraphNodes
 	private int id = 0;
-	
+
 	/**
 	 * Creates a directed NavigationGraph object whose paths have edge properties 
 	 * 
@@ -53,18 +42,12 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 */
 	public NavigationGraph(String[] edgePropertyNames) {
 		//TODO - Done (Sid)
-		
-		this.edgeProperties = edgePropertyNames;
 
-		
-		
-		
-		
-			
-		}
-		
-	
-	
+		this.edgeProperties = edgePropertyNames;	
+	}
+
+
+
 	/**
 	 * Adds a vertex to the Graph
 	 * 
@@ -75,15 +58,20 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		// TODO - Done (Sid)
 		// Checked (PB & JW)
 
+		//scan the list of current vertices in the graph to make sure that the vertex to be added
+		//does not already exist
+		for (int i = 0; i<this.vertices.size(); i++)
+			if (this.vertices.get(i).equals(vertex))
+				return;
+
 		GraphNode<Location, Path> toAdd = new GraphNode<Location, Path>(vertex, this.id);
-		// May need to check if the vertex already exists.
 
 		vertices.add(vertex);
 		this.navigationGraph.add(toAdd);
 		this.id++;
 		return;
 	}
-	
+
 	/**
 	 * Creates a directed edge from src to dest
 	 * 
@@ -98,19 +86,20 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//TODO - DONE (SID)
 		//	  	 Checked ()
 		// do we need to add a check to see if there is path from src to dest.
-		
-		int srcId = 0;
-		for (int j=0; j <this.navigationGraph.size(); j++){
-			srcId = this.navigationGraph.get(j).getId();
+
+		GraphNode<Location, Path> g = getGraphNodebyLocation(src);
+		if(g == null){
+			throw new NullPointerException();
 		}
-		GraphNode<Location, Path> g = getGraphNodebyLocation(src );
-				g.addOutEdge(edge);
+		g.addOutEdge(edge);
 		this.edges.add(edge); //adds edge
-		this.navigationGraph.get(srcId).addOutEdge(edge);
+		this.navigationGraph.get(g.getId()).addOutEdge(edge);
 		return;
 	}
+
 	private GraphNode<Location, Path> getGraphNodebyLocation(Location src){
-		
+
+		//TODO optimize this code. Do not create a graphnode every loop iteration
 		for(int j=0; j<navigationGraph.size();j++){
 			GraphNode<Location, Path> temp = (navigationGraph.get(j));
 			if(temp.getVertexData().equals(src)){
@@ -119,7 +108,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Getter method for the vertices
 	 * 
@@ -130,7 +119,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//		 Checked (PB & JW)
 		return this.vertices;
 	}
-	
+
 	/**
 	 * Returns edge if there is one from src to dest vertex else null
 	 * 
@@ -155,7 +144,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//else, an edge does not exist
 		return null;
 	}
-	
+
 	/**
 	 * Returns the outgoing edges from a vertex
 	 * 
@@ -167,15 +156,13 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 			throws IllegalArgumentException{
 		//TODO - Done (SID)
 		//		 Checked (PB & JW)
-		for (int j=0; j<vertices.size(); j++){
-			if (navigationGraph.get(j).getVertexData().equals(src)){
-				return navigationGraph.get(j).getOutEdges();
-			}
-		}
+		GraphNode<Location, Path> g = getGraphNodebyLocation(src);
+		if (g!=null)
+			return g.getOutEdges();
 		//if the vertex does not exist, throw illegalArgumentException
 		throw new IllegalArgumentException("That location does not exist!");
 	}
-	
+
 	/**
 	 * Returns neighbors of a vertex
 	 * 
@@ -184,28 +171,28 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return List of vertices(neighbors) of type Location
 	 */
 	public List<Location> getNeighbors(Location vertex){
-			List<Location> neighbors = new ArrayList<Location>();
-			List<Path> vertexPaths = new ArrayList<Path>();
-			
-			//check all nodes for neighbors or vertex
-			for(int i = 0; i < vertexPaths.size(); i++){
-				if(navigationGraph.get(i).equals(vertex)){
-					//"out" neighbors
-					List<Path> temp = navigationGraph.get(i).getOutEdges();
-					for(int j = 0; j < temp.size(); j++){
-						neighbors.add(temp.get(j).getSource());
-					}
-				}
-				//"in" neighbors
-				if(navigationGraph.get(i).getOutEdges().contains(vertex)){
-					neighbors.add(navigationGraph.get(i).getVertexData());
+		List<Location> neighbors = new ArrayList<Location>();
+		List<Path> vertexPaths = new ArrayList<Path>();
+
+		//check all nodes for neighbors or vertex
+		for(int i = 0; i < vertexPaths.size(); i++){
+			if(navigationGraph.get(i).equals(vertex)){
+				//"out" neighbors
+				List<Path> temp = navigationGraph.get(i).getOutEdges();
+				for(int j = 0; j < temp.size(); j++){
+					neighbors.add(temp.get(j).getSource());
 				}
 			}
-
-			return neighbors;
+			//"in" neighbors
+			if(navigationGraph.get(i).getOutEdges().contains(vertex)){
+				neighbors.add(navigationGraph.get(i).getVertexData());
+			}
 		}
-	
-	
+
+		return neighbors;
+	}
+
+
 	/**
 	 * Calculate the shortest route from src to dest vertex using
 	 * edgePropertyName
@@ -221,14 +208,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName){
 		//make static shell class with predecessor list equal to null, weight equal to infinity, and visited to false
 		//in algorithm, have priority queue with vertex info of locations, put weight equal to 0
-			//call getvertices //this.getvertices
+		//call getvertices //this.getvertices
 		
 		boolean visited = false; 
 		double vectorWeight = Double.POSITIVE_INFINITY; 
-		
+
 		return;
 	}
-	
+
 	/**
 	 * Getter method for edge property names
 	 * 
@@ -236,11 +223,11 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 */
 	public String[] getEdgePropertyNames(){
 		return edgeProperties ;
-		 	
-		}
-		
-	
-	
+
+	}
+
+
+
 	/**
 	 * Returns a Location object given its name
 	 * 
@@ -249,13 +236,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
+		
 		for (int k = 0; k < vertices.size(); k++){
 			if (vertices.get(k).getName().equals(name)){
 				return vertices.get(k);
 			}
 		}
 		return null;
-		
+
 	}
 
 }

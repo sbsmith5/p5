@@ -240,6 +240,7 @@ public class MapApp {
 			destination = scnr.next();
 			Location sourceLoc = new Location(source);
 			Location destinationLoc = new Location(destination);
+			
 			for(int j = 0; j < locationList.size(); j++){
 				if (source.equals(locationList.get(j))){
 					sourceDup = true;
