@@ -197,4 +197,65 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 					}
 				}
 				//"in" neighbors
-				if(na
+				if(navigationGraph.get(i).getOutEdges().contains(vertex)){
+					neighbors.add(navigationGraph.get(i).getVertexData());
+				}
+			}
+
+			return neighbors;
+		}
+	
+	
+	/**
+	 * Calculate the shortest route from src to dest vertex using
+	 * edgePropertyName
+	 * 
+	 * @param src
+	 *            Source vertex from which the shortest route is desired
+	 * @param dest
+	 *            Destination vertex to which the shortest route is desired
+	 * @param edgePropertyName
+	 *            edge property by which shortest route has to be calculated
+	 * @return List of paths that denote the shortest route by edgePropertyName
+	 */
+	public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName){
+		//make static shell class with predecessor list equal to null, weight equal to infinity, and visited to false
+		//in algorithm, have priority queue with vertex info of locations, put weight equal to 0
+			//call getvertices //this.getvertices
+		
+		boolean visited = false; 
+		double vectorWeight = Double.POSITIVE_INFINITY; 
+		
+		return;
+	}
+	
+	/**
+	 * Getter method for edge property names
+	 * 
+	 * @return array of String that denotes the Path property names
+	 */
+	public String[] getEdgePropertyNames(){
+		return edgeProperties ;
+		 	
+		}
+		
+	
+	
+	/**
+	 * Returns a Location object given its name
+	 * 
+	 * @param name
+	 *            name of the location
+	 * @return Location object
+	 */
+	public Location getLocationByName(String name) {
+		for (int k = 0; k < vertices.size(); k++){
+			if (vertices.get(k).getName().equals(name)){
+				return vertices.get(k);
+			}
+		}
+		return null;
+		
+	}
+
+}
