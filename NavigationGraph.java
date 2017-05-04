@@ -6,7 +6,9 @@
 // TEAM:    Team 6
 // Authors:
 // Author1: (Sidney Smith, sbsmith5@wisc.edu, sbsmith5, 001)
-// Author2: ()
+// Author2: (Jack Weissburg,,,)
+// Author3: (Patrick Budyn, budyn@wisc.edu, budyn, 002)
+// Author4: (Shikhar Mittal,,,)
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 
@@ -29,7 +31,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	
 	private String[] edgeProperties;
 	//SID - Will be representing the graph as an ArrayList<LinkedList<TYPE (TBD)>>
-	private ArrayList<GraphNode> navigationGraph;
+	private ArrayList< GraphNode<Location, Path>> navigationGraph;
+	//this represents the list of locations found in this NavigationGraph instance
+	private ArrayList<Location> vertices;
+	//this represents the list of edges found in this NavigationGraph instance.
+	//created to make getEdgeIfExists() easier to implement.
+	private ArrayList<Path> edges;
+	//this represents the current id to be assigned to new GraphNodes
+	private int id = 0;
 	
 	/**
 	 * Creates a directed NavigationGraph object whose paths have edge properties 
@@ -43,32 +52,18 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            of this list must agree with the propertynames in the graph)
 	 */
 	public NavigationGraph(String[] edgePropertyNames) {
-		this.edgeProperties = new String[edgePropertyNames.length];
-		return;
-	}
-	//JACK'S ATTEMPT BELOW
-//	//TODO: THIS NEEDS TO BE CHANGED TO GRAPHNODES
-//	public NavigationGraph(String[] edgePropertyNames) {
-//		Boolean visited[] = new Boolean [edgePropertyNames.length];
-//		int totalWeight[] = new int [edgePropertyNames.length];
-//		//array of paths?
-//		for (int i = 0; i < edgePropertyNames.length - 1; i++){
-//			visited[i] = false;
-//			totalWeight[i] = Integer.MAX_VALUE;
-//			GraphNode node = new GraphNode(edgePropertyNames[i], i);
-//			
-//			//set paths to null
-//		}
-//		totalWeight[0] = 0; // set start vertex weight to zero
-//		PriorityQueue<String> queue = 
-//	            new PriorityQueue<String>(edgePropertyNames.length,
-//	            		getShortestRoute(V src, V dest, String edgePropertyName)); //unsure??
-//		//insert start vertex total weight, start vertex to queue
-//		// step 4 (last loop) on pg 4 of week 13 notes
-//			
-//		
-//	}
-	///END JACK'S ATTEMPT
+		//TODO - Done (Sid)
+		
+		this.edgeProperties = edgePropertyNames;
+
+		
+		
+		
+		
+			
+		}
+		
+	
 	
 	/**
 	 * Adds a vertex to the Graph
@@ -77,10 +72,15 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            vertex to be added
 	 */
 	public void addVertex(Location vertex){
-		//TODO
-		//May need to check if the graphnode already exists.
-		GraphNode toAdd = new GraphNode(vertex, );
-		this.navigationGraph.add()
+		// TODO - Done (Sid)
+		// Checked (PB & JW)
+
+		GraphNode<Location, Path> toAdd = new GraphNode<Location, Path>(vertex, this.id);
+		// May need to check if the vertex already exists.
+
+		vertices.add(vertex);
+		this.navigationGraph.add(toAdd);
+		this.id++;
 		return;
 	}
 	
@@ -95,8 +95,29 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            edge between src and dest
 	 */
 	public void addEdge(Location src, Location dest, Path edge){
-		//TODO
+		//TODO - DONE (SID)
+		//	  	 Checked ()
+		// do we need to add a check to see if there is path from src to dest.
+		
+		int srcId = 0;
+		for (int j=0; j <this.navigationGraph.size(); j++){
+			srcId = this.navigationGraph.get(j).getId();
+		}
+		GraphNode<Location, Path> g = getGraphNodebyLocation(src );
+				g.addOutEdge(edge);
+		this.edges.add(edge); //adds edge
+		this.navigationGraph.get(srcId).addOutEdge(edge);
 		return;
+	}
+	private GraphNode<Location, Path> getGraphNodebyLocation(Location src){
+		
+		for(int j=0; j<navigationGraph.size();j++){
+			GraphNode<Location, Path> temp = (navigationGraph.get(j));
+			if(temp.getVertexData().equals(src)){
+				return temp;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -105,7 +126,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return List of vertices of type Location
 	 */
 	public List<Location> getVertices(){
-		return;
+		//TODO - Done (SID)
+		//		 Checked (PB & JW)
+		return this.vertices;
 	}
 	
 	/**
@@ -117,8 +140,20 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            Destination vertex
 	 * @return Edge of type Path from src to dest
 	 */
-	public Path getEdgeIfExists(Location src, Path dest){
-		return;
+	public Path getEdgeIfExists(Location src, Location dest){
+		//TODO - Done (SID)
+		//		 Checked (PB & JW)
+		for (int j = 0; j<edges.size(); j++){
+			//if the source is the same, check the destination
+			if (edges.get(j).getSource().equals(src)){
+				//if the destination is the same as well, return the existing edge
+				if (edges.get(j).getDestination().equals(dest)){
+					return edges.get(j);
+				}
+			}
+		}
+		//else, an edge does not exist
+		return null;
 	}
 	
 	/**
@@ -128,8 +163,17 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            Source vertex for which the outgoing edges need to be obtained
 	 * @return List of edges of type Path
 	 */
-	public List<Path> getOutEdges(Location src){
-		return;
+	public List<Path> getOutEdges(Location src) 
+			throws IllegalArgumentException{
+		//TODO - Done (SID)
+		//		 Checked (PB & JW)
+		for (int j=0; j<vertices.size(); j++){
+			if (navigationGraph.get(j).getVertexData().equals(src)){
+				return navigationGraph.get(j).getOutEdges();
+			}
+		}
+		//if the vertex does not exist, throw illegalArgumentException
+		throw new IllegalArgumentException("That location does not exist!");
 	}
 	
 	/**
@@ -140,44 +184,17 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return List of vertices(neighbors) of type Location
 	 */
 	public List<Location> getNeighbors(Location vertex){
-		return;
-	}
-	
-	/**
-	 * Calculate the shortest route from src to dest vertex using
-	 * edgePropertyName
-	 * 
-	 * @param src
-	 *            Source vertex from which the shortest route is desired
-	 * @param dest
-	 *            Destination vertex to which the shortest route is desired
-	 * @param edgePropertyName
-	 *            edge property by which shortest route has to be calculated
-	 * @return List of paths that denote the shortest route by edgePropertyName
-	 */
-	public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName){
-		return;
-	}
-	
-	/**
-	 * Getter method for edge property names
-	 * 
-	 * @return array of String that denotes the Path property names
-	 */
-	public String[] getEdgePropertyNames(){
-		return;
-	}	
-	
-	/**
-	 * Returns a Location object given its name
-	 * 
-	 * @param name
-	 *            name of the location
-	 * @return Location object
-	 */
-	public Location getLocationByName(String name) {
-		Location loc = new Location(name);
-		return loc; 
-	}
-
-}
+			List<Location> neighbors = new ArrayList<Location>();
+			List<Path> vertexPaths = new ArrayList<Path>();
+			
+			//check all nodes for neighbors or vertex
+			for(int i = 0; i < vertexPaths.size(); i++){
+				if(navigationGraph.get(i).equals(vertex)){
+					//"out" neighbors
+					List<Path> temp = navigationGraph.get(i).getOutEdges();
+					for(int j = 0; j < temp.size(); j++){
+						neighbors.add(temp.get(j).getSource());
+					}
+				}
+				//"in" neighbors
+				if(na
