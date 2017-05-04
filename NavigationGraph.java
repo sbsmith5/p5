@@ -225,14 +225,13 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//in algorithm, have priority queue with vertex info of locations, put weight equal to 0
 		//call get vertices //this.getvertices
 		
-		if (src == null || dest == null || edgePropertyName == null)
+		if (src == null || dest == null || edgeProperty == null)
 			throw new IllegalArgumentException();
 		
 		List<Path> shortestPath = new ArrayList<Path>();
 		
 		QueueEntry[] queue = new QueueEntry[navigationGraph.size()];
 		int indexOfProperty = 0;
-		GraphNode<Location, Path> node = null;
 		
 		//get index for weight property to be used for shortest route
 		for (int i = 0; i<edgeProperties.length; i++){
@@ -254,7 +253,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		}
 		
 		
-		int startIndex = getIdByName(src);
+		int startIndex = getIdByLocation(src);
 		queue[startIndex].setWeight(0.0);
 		PriorityQueue<QueueEntry> pq = new PriorityQueue<QueueEntry>();
 		pq.add(queue[startIndex]);
@@ -270,7 +269,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 			for (int j=0; j<curr.getVertex().getOutEdges().size(); j++){
 				Path successor = curr.getVertex().getOutEdges().get(j);
 				//get successor location in navgraph for the node that corresponds to the successor
-				int index = getIdByName(successor.getDestination());
+				int index = getIdByLocation(successor.getDestination());
 				
 				if (!queue[index].getVisited()){
 					if (curr.getWeight() + successor.getProperties().get(indexOfProperty) < queue[index].getWeight()){
@@ -284,12 +283,20 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 			}
 		}
 		
-		//
+		//get destination
+		int destIndex = getIdByLocation(dest);
+		QueueEntry current = queue[destIndex];
+		while (current.getPredecessor() != null){
+			Path predEdge = getEdgeIfExists(current.getPredecessor().getVertex().getVertexData(), current.getVertex().getVertexData());
+			//only add non-null
+			if (predEdge != null){
+				shortestPath.add(0, predEdge);
+			}
+			current = current.getPredecessor();
+		}
 		
-		boolean visited = false; 
-		double vectorWeight = Double.POSITIVE_INFINITY; 
+		return shortestPath;
 
-		return;
 	}
 
 	/**
@@ -325,7 +332,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
 	}
 	
-	public int getIdByName(Location name) 
+	public int getIdByLocation(Location name) 
 		throws IllegalArgumentException{
 		
 		for (int j = 0; j<navigationGraph.size(); j++){
